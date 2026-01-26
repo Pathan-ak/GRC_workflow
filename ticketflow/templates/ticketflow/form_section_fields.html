@@ -1,0 +1,629 @@
+{% load static form_sections %}
+
+{# Always render the form field (hidden if form_obj exists) #}
+{% if form.form %}
+    {% if form_obj %}
+        {# Hide the form field if form is already selected, but ensure value is set #}
+        <input type="hidden" name="form" value="{{ form_obj.id }}" id="id_form">
+    {% else %}
+        {# Show form field if no form selected #}
+        <div class="form-field-wrapper" style="margin-bottom: 20px;">
+            {{ form.form.label_tag }}
+            {{ form.form }}
+            {% if form.form.errors %}
+                <ul class="errorlist">
+                    {% for error in form.form.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endif %}
+
+<style>
+.form-section {
+    margin-bottom: 32px;
+    padding: 20px 24px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.form-section-header {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #417690;
+    user-select: none;
+}
+
+.form-section-header:hover {
+    opacity: 0.9;
+}
+
+.section-toggle-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 16px;
+    color: #417690;
+    transition: transform 0.2s ease;
+    outline: none;
+    margin-left: 12px;
+}
+
+.section-toggle-btn:hover {
+    color: #2c5f7a;
+}
+
+.section-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+.toggle-icon {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    font-size: 14px;
+}
+
+.section-toggle-btn.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+}
+
+.form-section-fields[data-collapsible="true"] {
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+    max-height: 5000px; /* Large enough for most sections */
+    opacity: 1;
+}
+
+.form-section-fields[data-collapsible="true"].collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #417690;
+    margin: 0 0 4px 0;
+}
+
+.form-section-description {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.form-section-fields {
+    display: grid;
+    gap: 20px 24px; /* row gap: 20px, column gap: 24px */
+}
+
+.form-section-fields.columns-1 {
+    grid-template-columns: 1fr;
+}
+
+.form-section-fields.columns-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.form-section-fields.columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.form-section-fields.columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.form-field-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0; /* Remove extra margin since gap handles spacing */
+}
+
+.form-field-wrapper label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.form-field-wrapper input,
+.form-field-wrapper select,
+.form-field-wrapper textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    margin-bottom: 0;
+    box-sizing: border-box;
+}
+
+.form-field-wrapper input:focus,
+.form-field-wrapper select:focus,
+.form-field-wrapper textarea:focus {
+    outline: none;
+    border-color: #417690;
+    box-shadow: 0 0 0 2px rgba(65, 118, 144, 0.25);
+}
+
+.form-field-wrapper .errorlist {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 6px;
+    margin-bottom: 0;
+    list-style: none;
+    padding: 0;
+}
+
+.form-field-wrapper .helptext {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 6px;
+    margin-bottom: 0;
+}
+
+.form-field-wrapper textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* Fields without section */
+.fields-no-section {
+    margin-bottom: 32px;
+}
+
+.fields-no-section .form-section-fields {
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* Additional spacing improvements */
+.form-field-wrapper + .form-field-wrapper {
+    margin-top: 0; /* Grid gap handles spacing */
+}
+
+/* Better visual separation for multi-column layouts */
+.form-section-fields.columns-2 .form-field-wrapper,
+.form-section-fields.columns-3 .form-field-wrapper,
+.form-section-fields.columns-4 .form-field-wrapper {
+    min-height: 60px; /* Ensure consistent height */
+}
+
+/* Collapsible section styles */
+.form-section[data-section-id] {
+    transition: background-color 0.2s ease;
+}
+
+.form-section[data-section-id]:hover {
+    background-color: #f0f2f5;
+}
+
+/* Tab Navigation Styles */
+.form-tabs-container {
+    margin-bottom: 24px;
+}
+
+.form-tabs-nav {
+    display: flex;
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 20px;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.form-tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #6c757d;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    outline: none;
+    position: relative;
+    bottom: -2px;
+}
+
+.form-tab-btn:hover {
+    color: #417690;
+    background-color: #f8f9fa;
+}
+
+.form-tab-btn.active {
+    color: #417690;
+    border-bottom-color: #417690;
+    font-weight: 600;
+}
+
+.tab-icon {
+    font-size: 0.9rem;
+}
+
+.tab-name {
+    white-space: nowrap;
+}
+
+/* Tab Content Styles */
+.form-tabs-content {
+    position: relative;
+}
+
+.form-tab-panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.form-tab-panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tab-description {
+    margin-bottom: 20px;
+    padding: 12px;
+    background-color: #e7f3ff;
+    border-left: 4px solid #417690;
+    border-radius: 4px;
+    color: #2c5f7a;
+    font-size: 0.9rem;
+}
+</style>
+
+<script>
+// Collapsible sections functionality
+(function() {
+    'use strict';
+    
+    function initCollapsibleSections() {
+        // Find all collapsible sections
+        const collapsibleSections = document.querySelectorAll('.form-section-fields[data-collapsible="true"]');
+        
+        collapsibleSections.forEach(function(sectionFields) {
+            const sectionId = sectionFields.getAttribute('id').replace('section-fields-', '');
+            const toggleBtn = document.querySelector(`.section-toggle-btn[data-section-id="${sectionId}"]`);
+            const sectionHeader = sectionFields.previousElementSibling;
+            
+            if (!toggleBtn) return;
+            
+            // Check if section should be collapsed by default (optional - you can change this)
+            // For now, all sections start expanded
+            
+            // Add click handler to toggle button
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleSection(sectionFields, toggleBtn);
+            });
+            
+            // Also allow clicking on header to toggle (optional)
+            if (sectionHeader) {
+                sectionHeader.addEventListener('click', function(e) {
+                    // Only toggle if clicking on header itself, not on the toggle button
+                    if (e.target === sectionHeader || e.target.closest('.form-section-title') || e.target.closest('.form-section-description')) {
+                        toggleSection(sectionFields, toggleBtn);
+                    }
+                });
+            }
+        });
+    }
+    
+    function toggleSection(sectionFields, toggleBtn) {
+        const isCollapsed = sectionFields.classList.contains('collapsed');
+        
+        if (isCollapsed) {
+            // Expand section
+            sectionFields.classList.remove('collapsed');
+            toggleBtn.classList.remove('collapsed');
+            // Set actual height for smooth animation
+            sectionFields.style.maxHeight = sectionFields.scrollHeight + 'px';
+            // Remove max-height after animation to allow content changes
+            setTimeout(function() {
+                if (!sectionFields.classList.contains('collapsed')) {
+                    sectionFields.style.maxHeight = 'none';
+                }
+            }, 300);
+        } else {
+            // Collapse section
+            sectionFields.style.maxHeight = sectionFields.scrollHeight + 'px';
+            // Force reflow
+            sectionFields.offsetHeight;
+            sectionFields.classList.add('collapsed');
+            toggleBtn.classList.add('collapsed');
+            sectionFields.style.maxHeight = '0';
+        }
+    }
+    
+    // Initialize on page load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCollapsibleSections);
+    } else {
+        initCollapsibleSections();
+    }
+})();
+
+// Tab switching functionality
+function switchTab(tabId) {
+    // Hide all tab panels
+    const allPanels = document.querySelectorAll('.form-tab-panel');
+    allPanels.forEach(panel => {
+        panel.classList.remove('active');
+    });
+    
+    // Remove active class from all tab buttons
+    const allButtons = document.querySelectorAll('.form-tab-btn');
+    allButtons.forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab panel
+    const selectedPanel = document.getElementById('tab-panel-' + tabId);
+    if (selectedPanel) {
+        selectedPanel.classList.add('active');
+    }
+    
+    // Add active class to clicked button
+    const clickedButton = document.querySelector(`.form-tab-btn[data-tab-id="${tabId}"]`);
+    if (clickedButton) {
+        clickedButton.classList.add('active');
+    }
+    
+    // Re-initialize collapsible sections for the new tab
+    setTimeout(function() {
+        if (typeof initCollapsibleSections === 'function') {
+            initCollapsibleSections();
+        }
+    }, 100);
+}
+
+// Initialize tabs on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Make sure first tab is active if tabs exist
+    const firstTabBtn = document.querySelector('.form-tab-btn');
+    if (firstTabBtn && !firstTabBtn.classList.contains('active')) {
+        const firstTabId = firstTabBtn.getAttribute('data-tab-id');
+        if (firstTabId) {
+            switchTab(parseInt(firstTabId));
+        }
+    }
+});
+</script>
+
+{# Tab Navigation #}
+{% if tabs %}
+<div class="form-tabs-container">
+    <div class="form-tabs-nav">
+        {% for tab_data in tabs %}
+            <button type="button" 
+                    class="form-tab-btn {% if forloop.first %}active{% endif %}" 
+                    data-tab-id="{{ tab_data.tab.id }}"
+                    onclick="switchTab({{ tab_data.tab.id }})">
+                {% if tab_data.tab.icon %}
+                    <span class="tab-icon">{{ tab_data.tab.icon }}</span>
+                {% endif %}
+                <span class="tab-name">{{ tab_data.tab.name }}</span>
+            </button>
+        {% endfor %}
+    </div>
+    
+    {# Tab Content #}
+    <div class="form-tabs-content">
+        {% for tab_data in tabs %}
+            <div class="form-tab-panel {% if forloop.first %}active{% endif %}" 
+                 id="tab-panel-{{ tab_data.tab.id }}"
+                 data-tab-id="{{ tab_data.tab.id }}">
+                {% if tab_data.tab.description %}
+                    <div class="tab-description">{{ tab_data.tab.description }}</div>
+                {% endif %}
+                
+                {# Sections within this tab #}
+                {% for section_data in tab_data.sections %}
+                    <div class="form-section" data-section-id="{{ section_data.section.id }}">
+                        <div class="form-section-header" {% if section_data.section.is_collapsible %}style="cursor: pointer;"{% endif %}>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <div style="flex: 1;">
+                                    <h3 class="form-section-title">{{ section_data.section.name }}</h3>
+                                    {% if section_data.section.description %}
+                                        <p class="form-section-description">{{ section_data.section.description }}</p>
+                                    {% endif %}
+                                </div>
+                                {% if section_data.section.is_collapsible %}
+                                    <button type="button" class="section-toggle-btn" aria-label="Toggle section" data-section-id="{{ section_data.section.id }}">
+                                        <span class="toggle-icon">▼</span>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-section-fields columns-{{ section_data.section.columns }}" 
+                             id="section-fields-{{ section_data.section.id }}"
+                             {% if section_data.section.is_collapsible %}data-collapsible="true"{% endif %}>
+                            {% for field_data in section_data.fields %}
+                                <div class="form-field-wrapper" style="grid-column: span 1;">
+                                    {% if field_data.bound_field %}
+                                        {{ field_data.bound_field.label_tag }}
+                                        {{ field_data.bound_field }}
+                                        {% if field_data.bound_field.errors %}
+                                            <ul class="errorlist">
+                                                {% for error in field_data.bound_field.errors %}
+                                                    <li>{{ error }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                        {% if field_data.bound_field.help_text %}
+                                            <span class="helptext">{{ field_data.bound_field.help_text }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <label for="id_{{ field_data.field_name }}">
+                                            {{ field_data.form_field.label }}{% if field_data.form_field.required %}*{% endif %}
+                                        </label>
+                                        <input type="text" name="{{ field_data.field_name }}" id="id_{{ field_data.field_name }}" 
+                                               {% if field_data.form_field.required %}required{% endif %}>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {# Fields directly in tab (without section) #}
+                {% if tab_data.fields_no_section %}
+                    <div class="fields-no-section">
+                        <div class="form-section-fields">
+                            {% for field_data in tab_data.fields_no_section %}
+                                <div class="form-field-wrapper">
+                                    {% if field_data.bound_field %}
+                                        {{ field_data.bound_field.label_tag }}
+                                        {{ field_data.bound_field }}
+                                        {% if field_data.bound_field.errors %}
+                                            <ul class="errorlist">
+                                                {% for error in field_data.bound_field.errors %}
+                                                    <li>{{ error }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                        {% if field_data.bound_field.help_text %}
+                                            <span class="helptext">{{ field_data.bound_field.help_text }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <label for="id_{{ field_data.field_name }}">
+                                            {{ field_data.form_field.label }}{% if field_data.form_field.required %}*{% endif %}
+                                        </label>
+                                        <input type="text" name="{{ field_data.field_name }}" id="id_{{ field_data.field_name }}" 
+                                               {% if field_data.form_field.required %}required{% endif %}>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{# Sections without tabs #}
+{% for section_data in sections %}
+    <div class="form-section" data-section-id="{{ section_data.section.id }}">
+        <div class="form-section-header" {% if section_data.section.is_collapsible %}style="cursor: pointer;"{% endif %}>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="flex: 1;">
+                    <h3 class="form-section-title">{{ section_data.section.name }}</h3>
+                    {% if section_data.section.description %}
+                        <p class="form-section-description">{{ section_data.section.description }}</p>
+                    {% endif %}
+                </div>
+                {% if section_data.section.is_collapsible %}
+                    <button type="button" class="section-toggle-btn" aria-label="Toggle section" data-section-id="{{ section_data.section.id }}">
+                        <span class="toggle-icon">▼</span>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-section-fields columns-{{ section_data.section.columns }}" 
+             id="section-fields-{{ section_data.section.id }}"
+             {% if section_data.section.is_collapsible %}data-collapsible="true"{% endif %}>
+            {% for field_data in section_data.fields %}
+                <div class="form-field-wrapper" style="grid-column: span 1;">
+                    {% if field_data.bound_field %}
+                        {{ field_data.bound_field.label_tag }}
+                        {{ field_data.bound_field }}
+                        {% if field_data.bound_field.errors %}
+                            <ul class="errorlist">
+                                {% for error in field_data.bound_field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% if field_data.bound_field.help_text %}
+                            <span class="helptext">{{ field_data.bound_field.help_text }}</span>
+                        {% endif %}
+                    {% else %}
+                        {# Fallback if bound field not available #}
+                        <label for="id_{{ field_data.field_name }}">
+                            {{ field_data.form_field.label }}{% if field_data.form_field.required %}*{% endif %}
+                        </label>
+                        <input type="text" name="{{ field_data.field_name }}" id="id_{{ field_data.field_name }}" 
+                               {% if field_data.form_field.required %}required{% endif %}>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+
+{% if fields_no_section %}
+    <div class="fields-no-section">
+        <div class="form-section-fields">
+            {% for field_data in fields_no_section %}
+                <div class="form-field-wrapper">
+                    {% if field_data.bound_field %}
+                        {{ field_data.bound_field.label_tag }}
+                        {{ field_data.bound_field }}
+                        {% if field_data.bound_field.errors %}
+                            <ul class="errorlist">
+                                {% for error in field_data.bound_field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% if field_data.bound_field.help_text %}
+                            <span class="helptext">{{ field_data.bound_field.help_text }}</span>
+                        {% endif %}
+                    {% else %}
+                        <label for="id_{{ field_data.field_name }}">
+                            {{ field_data.form_field.label }}{% if field_data.form_field.required %}*{% endif %}
+                        </label>
+                        <input type="text" name="{{ field_data.field_name }}" id="id_{{ field_data.field_name }}" 
+                               {% if field_data.form_field.required %}required{% endif %}>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+{# Fallback: render remaining form fields that weren't in sections #}
+{% for field in form %}
+    {% if field.name != 'form' %}
+        {% if not field.name|endswith:'__hidden' %}
+            {% if field.name not in processed_fields %}
+                <div class="form-field-wrapper">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if field.help_text %}
+                        <span class="helptext">{{ field.help_text }}</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endfor %}

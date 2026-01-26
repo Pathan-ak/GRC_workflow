@@ -1,0 +1,195 @@
+{% load static %}
+
+<style>
+.form-section {
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.form-section-header {
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #417690;
+}
+
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #417690;
+    margin: 0 0 4px 0;
+}
+
+.form-section-description {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.form-section-fields {
+    display: grid;
+    gap: 16px;
+}
+
+.form-section-fields.columns-1 {
+    grid-template-columns: 1fr;
+}
+
+.form-section-fields.columns-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.form-section-fields.columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.form-section-fields.columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.form-field-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-field-wrapper label {
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.form-field-wrapper input,
+.form-field-wrapper select,
+.form-field-wrapper textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.form-field-wrapper input:focus,
+.form-field-wrapper select:focus,
+.form-field-wrapper textarea:focus {
+    outline: none;
+    border-color: #417690;
+    box-shadow: 0 0 0 2px rgba(65, 118, 144, 0.25);
+}
+
+.form-field-wrapper .errorlist {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    list-style: none;
+    padding: 0;
+}
+
+.form-field-wrapper .helptext {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+.form-field-wrapper textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* Fields without section */
+.fields-no-section {
+    margin-bottom: 24px;
+}
+
+.fields-no-section .form-section-fields {
+    grid-template-columns: 1fr;
+}
+</style>
+
+{% if form_obj %}
+    {% if form_obj.sections.all %}
+        {% for section in form_obj.sections.all %}
+            <div class="form-section">
+                <div class="form-section-header">
+                    <h3 class="form-section-title">{{ section.name }}</h3>
+                    {% if section.description %}
+                        <p class="form-section-description">{{ section.description }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-section-fields columns-{{ section.columns }}">
+                    {% for field in section.fields.all %}
+                        {% if field.role == 'user' or not field.hidden %}
+                            <div class="form-field-wrapper" style="grid-column: span 1;">
+                                {% if field.field_type == 'select' %}
+                                    <label for="id_{{ field.id }}">
+                                        {{ field.label }}{% if field.required %}*{% endif %}
+                                    </label>
+                                    <select name="{{ field.id }}" id="id_{{ field.id }}" {% if field.required %}required{% endif %}>
+                                        <option value="">-- Select --</option>
+                                        {% for choice in field.choices.split:"," %}
+                                            <option value="{{ choice|trim }}">{{ choice|trim }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% elif field.field_type == 'textarea' %}
+                                    <label for="id_{{ field.id }}">
+                                        {{ field.label }}{% if field.required %}*{% endif %}
+                                    </label>
+                                    <textarea name="{{ field.id }}" id="id_{{ field.id }}" rows="4" {% if field.required %}required{% endif %} placeholder="{{ field.placeholder }}"></textarea>
+                                {% elif field.field_type == 'file' %}
+                                    <label for="id_{{ field.id }}">
+                                        {{ field.label }}{% if field.required %}*{% endif %}
+                                    </label>
+                                    <input type="file" name="{{ field.id }}" id="id_{{ field.id }}" {% if field.required %}required{% endif %}>
+                                {% elif field.field_type == 'date' %}
+                                    <label for="id_{{ field.id }}">
+                                        {{ field.label }}{% if field.required %}*{% endif %}
+                                    </label>
+                                    <input type="date" name="{{ field.id }}" id="id_{{ field.id }}" {% if field.required %}required{% endif %} placeholder="{{ field.placeholder }}">
+                                {% elif field.field_type == 'number' %}
+                                    <label for="id_{{ field.id }}">
+                                        {{ field.label }}{% if field.required %}*{% endif %}
+                                    </label>
+                                    <input type="number" name="{{ field.id }}" id="id_{{ field.id }}" {% if field.required %}required{% endif %} placeholder="{{ field.placeholder }}">
+                                {% elif field.field_type == 'checkbox' %}
+                                    <label>
+                                        <input type="checkbox" name="{{ field.id }}" id="id_{{ field.id }}" {% if field.required %}required{% endif %}>
+                                        {{ field.label }}{% if field.required %}*{% endif %}
+                                    </label>
+                                {% else %}
+                                    <label for="id_{{ field.id }}">
+                                        {{ field.label }}{% if field.required %}*{% endif %}
+                                    </label>
+                                    <input type="text" name="{{ field.id }}" id="id_{{ field.id }}" {% if field.required %}required{% endif %} placeholder="{{ field.placeholder }}" {% if field.max_length %}maxlength="{{ field.max_length }}"{% endif %}>
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <span class="helptext">{{ field.help_text }}</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    {# Fields without section #}
+    {% with fields_no_section=form_obj.fields.filter.section__isnull=True %}
+        {% if fields_no_section %}
+            <div class="fields-no-section">
+                <div class="form-section-fields">
+                    {% for field in fields_no_section %}
+                        {% if field.role == 'user' or not field.hidden %}
+                            <div class="form-field-wrapper">
+                                {# Same field rendering as above #}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+{% else %}
+    {# Fallback to default form rendering if no form_obj #}
+    {{ form }}
+{% endif %}

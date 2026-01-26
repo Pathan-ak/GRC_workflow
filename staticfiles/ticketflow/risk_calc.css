@@ -1,0 +1,19 @@
+.risk-red {
+  color: #b71c1c;
+  font-weight: bold;
+}
+
+.risk-orange {
+  color: #e65100;
+  font-weight: bold;
+}
+
+.risk-yellow {
+  color: #f9a825;
+  font-weight: bold;
+}
+
+.risk-green {
+  color: #2e7d32;
+  font-weight: bold;
+}

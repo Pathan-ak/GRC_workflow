@@ -1,0 +1,18 @@
+{% extends "grc/base.html" %}
+{% block page_title %}GRC Dynamic Requests{% endblock %}
+
+{% block content %}
+<div class="grid">
+  {% if forms %}
+    {% for f in forms %}
+      <div class="card">
+        <h3 style="margin:0 0 8px;">{{ f.name }}</h3>
+        {% if f.description %}<p>{{ f.description }}</p>{% endif %}
+        <a class="btn" href="{% url 'grc:form_start' f.pk %}">START REQUEST</a>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No forms have a workflow template yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

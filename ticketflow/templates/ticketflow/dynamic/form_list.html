@@ -1,0 +1,28 @@
+{% extends "viewflow/workflow/site_base.html" %}
+
+{% block page_title %}GRC Dynamic Requests{% endblock %}
+
+{% block content %}
+<div class="mdc-layout-grid">
+  <div class="mdc-layout-grid__inner">
+    {% if forms %}
+      {% for f in forms %}
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
+          <div class="mdc-card" style="padding:16px;">
+            <h3 style="margin:0 0 8px;">{{ f.name }}</h3>
+            {% if f.description %}<p>{{ f.description }}</p>{% endif %}
+            <a class="mdc-button mdc-button--raised"
+               href="{% url 'grc:start_form' f.pk %}">
+              START REQUEST
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+        <p>No forms have a workflow template yet.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

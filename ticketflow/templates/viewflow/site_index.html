@@ -1,0 +1,11 @@
+{% extends "viewflow/site_index.html" %}
+
+{% block app_list %}
+  {{ block.super }}
+  <div class="mdc-list">
+    <a class="mdc-list-item" href="{% url 'grc:form_list' %}">
+      <i class="material-icons mdc-list-item__graphic" aria-hidden="true">dynamic_form</i>
+      <span class="mdc-list-item__text">GRC Dynamic Requests</span>
+    </a>
+  </div>
+{% endblock %}

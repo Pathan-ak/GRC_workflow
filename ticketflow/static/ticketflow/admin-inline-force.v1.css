@@ -1,0 +1,114 @@
+/* ===== Force compact widths for TicketFlow inline ===== */
+
+.inline-group table.tabular.tf-inline {
+  table-layout: fixed !important;
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 6px !important;
+}
+
+.inline-group table.tabular.tf-inline th,
+.inline-group table.tabular.tf-inline td {
+  padding: 8px 10px !important;
+  vertical-align: top !important;
+  line-height: 1.25 !important;
+  box-sizing: border-box !important;
+}
+
+/* --- Column widths (after removing ORDER):
+   1 Label | 2 Type | 3 Required | 4 Help | 5 Choices | 6 MaxLen
+   7 Role | 8 Placeholder | 9 Readonly | 10 Hidden | 11 Delete
+*/
+.inline-group table.tabular.tf-inline th:nth-child(1),
+.inline-group table.tabular.tf-inline td:nth-child(1) { width: 420px !important; max-width: 420px !important; }
+
+.inline-group table.tabular.tf-inline th:nth-child(2),
+.inline-group table.tabular.tf-inline td:nth-child(2) { width: 120px !important; max-width: 120px !important; }
+
+.inline-group table.tabular.tf-inline th:nth-child(3),
+.inline-group table.tabular.tf-inline td:nth-child(3) { width: 70px !important;  max-width: 70px !important; text-align: center; }
+
+.inline-group table.tabular.tf-inline th:nth-child(4),
+.inline-group table.tabular.tf-inline td:nth-child(4) { width: 360px !important; max-width: 360px !important; }
+
+.inline-group table.tabular.tf-inline th:nth-child(5),
+.inline-group table.tabular.tf-inline td:nth-child(5) { width: 300px !important; max-width: 300px !important; }
+
+.inline-group table.tabular.tf-inline th:nth-child(6),
+.inline-group table.tabular.tf-inline td:nth-child(6) { width: 90px !important;  max-width: 90px !important; }
+
+.inline-group table.tabular.tf-inline th:nth-child(7),
+.inline-group table.tabular.tf-inline td:nth-child(7) { width: 180px !important; max-width: 180px !important; }
+
+.inline-group table.tabular.tf-inline th:nth-child(8),
+.inline-group table.tabular.tf-inline td:nth-child(8) { width: 220px !important; max-width: 220px !important; }
+
+.inline-group table.tabular.tf-inline th:nth-child(9),
+.inline-group table.tabular.tf-inline td:nth-child(9),
+.inline-group table.tabular.tf-inline th:nth-child(10),
+.inline-group table.tabular.tf-inline td:nth-child(10),
+.inline-group table.tabular.tf-inline th:nth-child(11),
+.inline-group table.tabular.tf-inline td:nth-child(11) {
+  width: 70px !important; max-width: 70px !important; text-align: center;
+}
+
+/* Inputs/textareas must NOT expand beyond their column width */
+.inline-group table.tabular.tf-inline td input[type="text"],
+.inline-group table.tabular.tf-inline td input[type="number"],
+.inline-group table.tabular.tf-inline td select,
+.inline-group table.tabular.tf-inline td textarea {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Specific compact sizes to avoid “big boxes” no matter the theme */
+.inline-group table.tabular.tf-inline td:nth-child(4) textarea { /* Help text */
+  height: 2.6em !important; min-height: 2.6em !important; max-height: 6em !important; resize: vertical !important;
+}
+.inline-group table.tabular.tf-inline td:nth-child(5) textarea { /* Choices */
+  height: 2.2em !important; min-height: 2.2em !important; max-height: 2.8em !important; resize: none !important; font-size: 13px !important;
+}
+
+/* Label overlay fix */
+.inline-group .inline_label,
+.inline-group .original .inline_label,
+.inline-group td .inline_label {
+  position: static !important;
+  float: none !important;
+  display: block !important;
+  margin: 0 0 4px 0 !important;
+  line-height: 1.2 !important;
+  color: #9aa0a6 !important;
+  font-size: 12px !important;
+  pointer-events: none;
+}
+
+/* Hide “original” cell if present */
+.inline-group table.tabular th.original,
+.inline-group table.tabular td.original { display: none !important; }
+
+/* Label input spacing (never hides under grey title) */
+.inline-group td input[name$="-label"] { margin-top: 2px !important; }
+
+/* Notify emails field smaller */
+#id_notify_emails {
+  width: 60% !important;
+  height: 2.2em !important;
+  resize: none !important;
+  font-size: 13px !important;
+}
+
+/* Drag handle */
+.drag-handle {
+  display: inline-block;
+  font-size: 18px;
+  cursor: grab;
+  opacity: 0.7;
+  padding: 0 6px;
+  user-select: none;
+  vertical-align: middle;
+}
+.drag-handle:hover { opacity: 1; }

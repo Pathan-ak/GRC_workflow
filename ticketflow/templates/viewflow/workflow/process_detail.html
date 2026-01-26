@@ -1,0 +1,209 @@
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>GRC Dynamic Requests</title>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: #f4f6fb;
+      margin: 0;
+    }
+
+    .topbar {
+      background: linear-gradient(90deg, #6a00f4, #7b2cff);
+      color: #fff;
+      padding: 16px 24px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .container {
+      padding: 24px;
+      max-width: 1200px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .section {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .section-title {
+      font-weight: 800;
+      margin-bottom: 14px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e6e6e6;
+      vertical-align: top;
+    }
+
+    th {
+      width: 35%;
+      font-weight: 700;
+      background: #fafafa;
+    }
+
+    /* ================= RISK COLORS ================= */
+    .risk-critical {
+      color: #b30000;
+      font-weight: 800;
+    }
+
+    .risk-high {
+      color: #ff6a00;
+      font-weight: 800;
+    }
+
+    .risk-medium {
+      color: #d4a000;
+      font-weight: 800;
+    }
+
+    .risk-low {
+      color: #2e7d32;
+      font-weight: 800;
+    }
+
+    .decision-row {
+      margin: 6px 0;
+    }
+
+    .approved {
+      color: #2e7d32;
+      font-weight: 700;
+    }
+
+    .rejected {
+      color: #c62828;
+      font-weight: 700;
+    }
+
+    .pending {
+      color: #666;
+      font-weight: 700;
+    }
+
+    a.file-link {
+      color: #1a73e8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="topbar">
+  GRC Dynamic Requests
+</div>
+
+<div class="container">
+
+  <!-- ================= PROCESS INFO ================= -->
+  <div class="section">
+    <h2>{{ process }}</h2>
+    <table>
+      <tr><th>Status</th><td>{{ process.status|upper }}</td></tr>
+      <tr><th>Created</th><td>{{ process.created }}</td></tr>
+      <tr><th>Finished</th><td>{{ process.finished }}</td></tr>
+      <tr><th>Form</th><td>{{ process.form.name }}</td></tr>
+      <tr><th>Entry</th><td>Entry #{{ process.entry.id }} / {{ process.form.name }}</td></tr>
+    </table>
+  </div>
+
+  <!-- ================= ENTRY DETAILS ================= -->
+  <div class="section">
+    <div class="section-title">Entry Details</div>
+
+    <table>
+      {% for v in process.entry.values.all %}
+        {% with label=v.field.label|lower value=v.value_text|default:"" %}
+        <tr>
+          <th>{{ v.field.label }}</th>
+          <td
+            {% if "inherent" in label %}
+              class="risk-{{ value|lower }}"
+            {% elif "residual" in label %}
+              {% if value|slice:":-1"|add:0 >= 75 %}class="risk-critical"
+              {% elif value|slice:":-1"|add:0 >= 50 %}class="risk-high"
+              {% elif value|slice:":-1"|add:0 >= 25 %}class="risk-medium"
+              {% else %}class="risk-low"{% endif %}
+            {% elif "control" in label %}
+              {% if value|lower == "weak" %}class="risk-critical"
+              {% elif value|lower == "moderate" %}class="risk-high"
+              {% elif value|lower == "good" %}class="risk-low"
+              {% elif value|lower == "strong" %}class="risk-low"
+              {% endif %}
+            {% endif %}
+          >
+            {% if v.value_file %}
+              <a href="{{ v.value_file.url }}" class="file-link" target="_blank">
+                Download file
+              </a>
+            {% else %}
+              {{ value|default:"—" }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endwith %}
+      {% endfor %}
+    </table>
+  </div>
+
+  <!-- ================= DECISIONS ================= -->
+  <div class="section">
+    <div class="section-title">Decisions</div>
+
+    <div class="decision-row">
+      <strong>Risk Representative decision:</strong>
+      <span class="{{ process.user_decision|default:'pending' }}">
+        {{ process.user_decision|default:"pending" }}
+      </span>
+    </div>
+
+    <div class="decision-row">
+      <strong>Risk Champion decision:</strong>
+      <span class="{{ process.dev_decision|default:'pending' }}">
+        {{ process.dev_decision|default:"pending" }}
+      </span>
+    </div>
+
+    <div class="decision-row">
+      <strong>Risk Approver decision:</strong>
+      <span class="{{ process.ba_decision|default:'pending' }}">
+        {{ process.ba_decision|default:"pending" }}
+      </span>
+    </div>
+
+    <div class="decision-row">
+      <strong>CRO decision:</strong>
+      <span class="{{ process.pm_decision|default:'pending' }}">
+        {{ process.pm_decision|default:"pending" }}
+      </span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

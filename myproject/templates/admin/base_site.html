@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <!-- Force-load ticketflow admin assets for both classic & new admin -->
+  <link rel="stylesheet" href="{% static 'ticketflow/admin-field-sizes.css' %}">
+  <link rel="stylesheet" href="{% static 'ticketflow/admin-inline-compact.v2.css' %}">
+  <link rel="stylesheet" href="{% static 'ticketflow/admin-sortable-inline.css' %}">
+  <script src="{% static 'ticketflow/admin-inline-mark.js' %}"></script>
+  <script src="{% static 'ticketflow/admin-sortable-inline.js' %}"></script>
+{% endblock %}
