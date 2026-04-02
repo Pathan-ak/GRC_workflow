@@ -1,0 +1,19 @@
+{% extends "grc/base.html" %}
+{% load static i18n %}
+
+{% block content %}
+<div class="vf-site">
+
+  <!-- Viewflow header -->
+  <div class="vf-header">
+    <h1>{% block page_title %}GRC Dynamic Requests{% endblock %}</h1>
+  </div>
+
+  <!-- Main content -->
+  <div class="vf-content">
+    {% block content_inner %}
+    {% endblock %}
+  </div>
+
+</div>
+{% endblock %}

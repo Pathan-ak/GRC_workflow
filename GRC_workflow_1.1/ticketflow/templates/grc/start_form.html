@@ -1,0 +1,18 @@
+{% extends "grc/base.html" %}
+{% block page_title %}Start: {{ form_obj.name|default:"Request" }}{% endblock %}
+
+{% block content %}
+  <div class="card" style="max-width:720px;margin:auto;">
+    <h2 style="margin-top:0;">Start: {{ form_obj.name }}</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form }}
+      <div style="margin-top:12px; display:flex; gap:10px;">
+        <button type="submit" class="btn">Submit</button>
+        <a href="{% url 'grc:form_list' %}" class="btn" style="background:#fff;color:#6200ee;border:1px solid #6200ee;">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

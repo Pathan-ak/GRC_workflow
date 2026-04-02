@@ -1,0 +1,280 @@
+{% extends "viewflow/workflow/task_base.html" %}
+{% load i18n static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'ticketflow/risk_calc.css' %}">
+<script src="{% static 'ticketflow/risk_calc.js' %}" defer></script>
+
+<style>
+/* =====================================================
+   PAGE BACKGROUND
+===================================================== */
+body {
+  background: #edf0f4;
+}
+
+/* =====================================================
+   MAIN GRID
+===================================================== */
+.vf-wrapper {
+  display: grid;
+  grid-template-columns: 60% 40%;
+  gap: 18px;
+  padding: 16px;
+}
+
+/* =====================================================
+   CARD
+===================================================== */
+.card {
+  background: #f8f9fb;
+  border-radius: 6px;
+  padding: 12px 14px;
+  border: 2px solid #222;
+}
+
+/* =====================================================
+   HEADERS
+===================================================== */
+.section-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #111;
+  border-bottom: 2px solid #999;
+  padding-bottom: 4px;
+}
+
+/* =====================================================
+   STATUS CHIPS
+===================================================== */
+.status-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.status-chip {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border: 1px solid #444;
+}
+
+.status-approved { background:#d4edda; color:#155724; }
+.status-rejected { background:#f8d7da; color:#721c24; }
+.status-pending  { background:#e2e3e5; color:#333; }
+
+/* =====================================================
+   TABLE
+===================================================== */
+.decision-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.74rem;
+  margin-top: 6px;
+}
+
+.decision-table th,
+.decision-table td {
+  padding: 4px 6px;
+  border: 1.5px solid #333;
+}
+
+.decision-table th {
+  width: 42%;
+  background: #eceff3;
+  font-weight: 800;
+}
+
+/* =====================================================
+   FORM GRID
+===================================================== */
+.vf-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 10px;
+}
+
+.vf-form > div,
+.vf-form > p {
+  grid-column: span 2;
+}
+
+/* =====================================================
+   LABELS
+===================================================== */
+.vf-form label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #222;
+  margin-bottom: -4px;
+}
+
+/* =====================================================
+   INPUTS
+===================================================== */
+.vf-form input,
+.vf-form select,
+.vf-form textarea {
+  width: 100%;
+  font-size: 0.72rem;
+  padding: 4px 6px;
+  height: 28px;
+  border: 2px solid #111;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.vf-form textarea {
+  min-height: 60px;
+  height: auto;
+}
+
+/* =====================================================
+   CALCULATED FIELDS
+===================================================== */
+.vf-form input[readonly] {
+  font-weight: 900;
+  border-width: 3px;
+}
+
+.risk-critical {
+  background: #fde2e2 !important;
+  border-color: #b30000 !important;
+  color: #b30000 !important;
+}
+
+.risk-high {
+  background: #fff0e0 !important;
+  border-color: #ff6a00 !important;
+  color: #ff6a00 !important;
+}
+
+.risk-medium {
+  background: #fff7d6 !important;
+  border-color: #d4a000 !important;
+  color: #8a6d00 !important;
+}
+
+.risk-low {
+  background: #e6f4ea !important;
+  border-color: #2e7d32 !important;
+  color: #2e7d32 !important;
+}
+
+/* =====================================================
+   ACTION BUTTONS
+===================================================== */
+.vf-actions {
+  grid-column: span 2;
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.vf-actions button {
+  min-width: 110px;
+  height: 32px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 1100px) {
+  .vf-wrapper {
+    grid-template-columns: 1fr;
+  }
+  .vf-form {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<div class="vf-wrapper">
+
+  <!-- ================= LEFT : SUMMARY ================= -->
+  <div class="card">
+    <div class="section-title">Ticket Summary</div>
+
+    {% if status_row %}
+      <div class="status-bar">
+        {% for role, status in status_row.items %}
+          <span class="status-chip status-{{ status }}">
+            {{ role }}: {{ status|title }}
+          </span>
+        {% endfor %}
+      </div>
+
+      <table class="decision-table">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Decision</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for role, status in status_row.items %}
+            <tr>
+              <td>{{ role }}</td>
+              <td>
+                <span class="status-chip status-{{ status }}">
+                  {{ status|title }}
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+    <br>
+    {{ ticket_summary_html|safe }}
+  </div>
+
+  <!-- ================= RIGHT : APPROVAL ================= -->
+  <div class="card">
+    <div class="section-title">{{ role_display }} Approval</div>
+
+    {% if form %}
+      <form method="post" enctype="multipart/form-data" class="vf-form">
+        {% csrf_token %}
+
+        {# 🔥 RENDER ALL FIELDS EXCEPT COMMENT BOXES #}
+        {% for field in form %}
+          {% if "comment" not in field.name %}
+            <div>
+              {{ field.label_tag }}
+              {{ field }}
+              {{ field.errors }}
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        {% if is_approval %}
+          <div class="vf-actions">
+            <button name="decision" value="approved" type="submit"
+                    class="mdc-button mdc-button--raised">
+              {% trans "Approve" %}
+            </button>
+
+            <button name="decision" value="rejected" type="submit"
+                    class="mdc-button mdc-button--outlined">
+              {% trans "Reject" %}
+            </button>
+          </div>
+        {% endif %}
+      </form>
+    {% else %}
+      <p><strong>{% trans "This task has been completed successfully." %}</strong></p>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

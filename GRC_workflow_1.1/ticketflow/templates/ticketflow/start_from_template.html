@@ -1,0 +1,32 @@
+{% extends "viewflow/workflow/task_base.html" %}
+{% block content %}
+  <div style="max-width:900px; margin:20px;">
+    <h2>Start Request from Workflow Template</h2>
+    <p>Pick a workflow template and the form to use for this request.</p>
+
+    <form method="post" style="margin-top:12px;">
+      {% csrf_token %}
+      <div style="margin-bottom:10px;">
+        <label style="display:block;font-weight:600;">Workflow template</label>
+        <select name="template" style="width:100%;max-width:600px;">
+          {% for t in templates %}
+            <option value="{{ t.id }}">{{ t.name }}{% if t.description %} - {{ t.description }}{% endif %}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <label style="display:block;font-weight:600;">Form</label>
+        <select name="form" style="width:100%;max-width:600px;">
+          {% for f in forms %}
+            <option value="{{ f.id }}">{{ f.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div style="margin-top:12px;">
+        <button class="mdc-button mdc-button--raised" type="submit">Start request</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

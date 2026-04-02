@@ -1,0 +1,134 @@
+/* ===== TicketFlow inline sizing – robust version ===== */
+
+/* Only affect our inline (marked by JS) */
+table.tabular.tf-inline {
+  table-layout: fixed !important;
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 6px !important; /* vertical gaps between rows */
+}
+
+table.tabular.tf-inline th,
+table.tabular.tf-inline td {
+  padding: 8px 10px !important;
+  vertical-align: top !important;
+  line-height: 1.25 !important;
+  box-sizing: border-box !important;
+}
+
+/* ===== HIDE the ORDER column visually but keep its field in DOM ===== */
+.inline-group table.tabular th:has(+ th + th + th + th + th + th + th),
+.inline-group table.tabular td:has(> input[name$="-order"]) {
+  display: none !important;
+}
+
+/* visual feedback while dragging */
+table.tabular.tf-inline tr.dragging { opacity: .6; }
+
+/* ==================================================================== */
+
+/* Column widths (after removing ORDER):
+   1 Label (drag+label) | 2 Type | 3 Required | 4 Help | 5 Choices | 6 MaxLen
+   7 Role | 8 Placeholder | 9 Readonly | 10 Hidden | 11 Delete
+*/
+table.tabular.tf-inline th:nth-child(1),
+table.tabular.tf-inline td:nth-child(1) { width: 420px !important; max-width: 420px !important; }
+
+table.tabular.tf-inline th:nth-child(2),
+table.tabular.tf-inline td:nth-child(2) { width: 120px !important; max-width: 120px !important; }
+
+table.tabular.tf-inline th:nth-child(3),
+table.tabular.tf-inline td:nth-child(3) { width: 70px !important;  max-width: 70px !important;  text-align: center; }
+
+table.tabular.tf-inline th:nth-child(4),
+table.tabular.tf-inline td:nth-child(4) { width: 360px !important; max-width: 360px !important; }
+
+table.tabular.tf-inline th:nth-child(5),
+table.tabular.tf-inline td:nth-child(5) { width: 320px !important; max-width: 320px !important; }
+
+table.tabular.tf-inline th:nth-child(6),
+table.tabular.tf-inline td:nth-child(6) { width: 90px !important;  max-width: 90px !important; }
+
+table.tabular.tf-inline th:nth-child(7),
+table.tabular.tf-inline td:nth-child(7) { width: 180px !important; max-width: 180px !important; }
+
+table.tabular.tf-inline th:nth-child(8),
+table.tabular.tf-inline td:nth-child(8) { width: 220px !important; max-width: 220px !important; }
+
+table.tabular.tf-inline th:nth-child(9),
+table.tabular.tf-inline td:nth-child(9),
+table.tabular.tf-inline th:nth-child(10),
+table.tabular.tf-inline td:nth-child(10),
+table.tabular.tf-inline th:nth-child(11),
+table.tabular.tf-inline td:nth-child(11) {
+  width: 70px !important;
+  max-width: 70px !important;
+  text-align: center;
+}
+
+/* Inputs stay inside their cells */
+table.tabular.tf-inline td input[type="text"],
+table.tabular.tf-inline td input[type="number"],
+table.tabular.tf-inline td select,
+table.tabular.tf-inline td textarea {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Make CHOICES compact regardless of admin theme defaults */
+table.tabular.tf-inline td:nth-child(5) textarea {
+  height: 2.2em !important;
+  resize: none !important;
+  font-size: 13px !important;
+}
+
+/* Make HELP TEXT a normal textarea that fits its column */
+table.tabular.tf-inline td:nth-child(4) textarea {
+  min-height: 2.2em !important;
+  max-height: 6em !important;
+  resize: vertical !important;
+}
+
+/* Keep original/grey label ABOVE the label input (never overlay) */
+.inline-group .inline_label,
+.inline-group .original .inline_label,
+.inline-group td .inline_label {
+  position: static !important;
+  float: none !important;
+  display: block !important;
+  margin: 0 0 4px 0 !important;
+  line-height: 1.2 !important;
+  color: #9aa0a6 !important;
+  font-size: 12px !important;
+  pointer-events: none;
+}
+
+/* If the admin renders an 'original' column, hide it */
+.inline-group table.tabular th.original,
+.inline-group table.tabular td.original { display: none !important; }
+
+/* Label input tiny spacing, never under the grey text */
+.inline-group td input[name$="-label"] { margin-top: 2px !important; }
+
+/* Notify emails: shrink */
+#id_notify_emails {
+  width: 60% !important;
+  height: 2.2em !important;
+  resize: none !important;
+  font-size: 13px !important;
+}
+
+/* Drag handle */
+.drag-handle {
+  display: inline-block;
+  font-size: 18px;
+  cursor: grab;
+  opacity: 0.7;
+  padding: 0 6px;
+  user-select: none;
+  vertical-align: middle;
+}
+.drag-handle:hover { opacity: 1; }

@@ -1,0 +1,23 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <!-- Force-load drag-and-drop script for Form admin -->
+  <script>
+    console.log("🔧 [change_form.html] Template override is being used!");
+    console.log("🔧 [change_form.html] About to load admin-drag-drop.js");
+  </script>
+  <script src="{% static 'ticketflow/admin-drag-drop.js' %}"></script>
+  <script>
+    console.log("🔧 [change_form.html] Script tag for admin-drag-drop.js should be above this");
+    // Verify script loaded
+    setTimeout(function() {
+      if (typeof window.initDragDrop === 'undefined' && typeof window.initTabsDrag === 'undefined') {
+        console.error("❌ admin-drag-drop.js did not load or initialize");
+      } else {
+        console.log("✅ admin-drag-drop.js functions are available");
+      }
+    }, 2000);
+  </script>
+{% endblock %}
