@@ -1,0 +1,17 @@
+/* Small handle and visual feedback while dragging */
+.drag-handle {
+  cursor: grab;
+  font-size: 18px;
+  line-height: 1;
+  user-select: none;
+  display: inline-block;
+  padding: 0 6px;
+}
+tr.form-row.dragging {
+  opacity: 0.6;
+}
+
+/* Give the first column (where handle lives) a little room */
+.inline-group td:first-child {
+  width: 28px;
+}

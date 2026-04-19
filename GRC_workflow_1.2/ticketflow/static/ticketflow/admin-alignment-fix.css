@@ -1,0 +1,166 @@
+/* TicketFlow admin polish: compact drag, one-line controls, tight headers */
+
+/* Table header row — sit closer to content */
+.inline-group table.tabular thead th {
+    padding: 4px 8px 6px !important;
+    vertical-align: bottom !important;
+    line-height: 1.15 !important;
+    font-size: 11px !important;
+}
+
+.inline-group table.tabular th,
+.inline-group table.tabular td {
+    vertical-align: middle !important;
+}
+
+.inline-group table.tabular tbody tr td {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+}
+
+/* Keep inline "original" text readable without huge spacing */
+.inline-group table.tabular td .readonly,
+.inline-group table.tabular td .inline_label,
+.inline-group table.tabular td .original,
+.inline-group table.tabular td p {
+    margin: 0 0 6px 0 !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+}
+
+/* Hide Django inline "original" metadata text that overlaps controls */
+.inline-group table.tabular tbody tr td:first-child .readonly,
+.inline-group table.tabular tbody tr td:first-child .inline_label,
+.inline-group table.tabular tbody tr td:first-child .original,
+.inline-group table.tabular tbody tr td:first-child p {
+    display: none !important;
+}
+
+.inline-group table.tabular tbody tr td:nth-child(2) .readonly,
+.inline-group table.tabular tbody tr td:nth-child(2) .inline_label,
+.inline-group table.tabular tbody tr td:nth-child(2) .original,
+.inline-group table.tabular tbody tr td:nth-child(2) p,
+.inline-group table.tabular tbody tr td:nth-child(3) .readonly,
+.inline-group table.tabular tbody tr td:nth-child(3) .inline_label,
+.inline-group table.tabular tbody tr td:nth-child(3) .original,
+.inline-group table.tabular tbody tr td:nth-child(3) p {
+    display: none !important;
+}
+
+/* Any cell that contains a drag handle: one horizontal row */
+.inline-group table.tabular tbody tr td:has(.drag-handle),
+.inline-group table.tabular tbody tr td:has(.drag-handle-tab),
+.inline-group table.tabular tbody tr td:has(.drag-handle-section) {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    min-height: 0 !important;
+}
+
+/* First column fallback (no :has support): flex row, one line */
+.inline-group table.tabular tbody tr td:nth-child(1) {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+}
+
+/* Flex children: handle fixed, field grows */
+.inline-group table.tabular tbody tr td:has([class*="drag-handle"]) > .drag-handle,
+.inline-group table.tabular tbody tr td:has([class*="drag-handle"]) > .drag-handle-tab,
+.inline-group table.tabular tbody tr td:has([class*="drag-handle"]) > .drag-handle-section {
+    flex: 0 0 auto !important;
+}
+
+.inline-group table.tabular tbody tr td:has([class*="drag-handle"]) > input,
+.inline-group table.tabular tbody tr td:has([class*="drag-handle"]) > select,
+.inline-group table.tabular tbody tr td:has([class*="drag-handle"]) > textarea {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+}
+
+/* Compact drag glyph box */
+.drag-handle,
+.drag-handle-tab,
+.drag-handle-section {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 1px solid #d5d9dd !important;
+    border-radius: 3px !important;
+    background: #f8fafc !important;
+    color: #417690 !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+    cursor: grab !important;
+}
+
+/* Description / long text — short default height (tabs, sections, etc.) */
+.inline-group table.tabular textarea[name$="-description"] {
+    min-height: 2.25em !important;
+    max-height: 4.5em !important;
+    height: 2.5em !important;
+    resize: vertical !important;
+    line-height: 1.35 !important;
+    padding: 4px 8px !important;
+}
+
+/* Help text / choices — not huge */
+.inline-group table.tabular textarea[name$="-help_text"],
+.inline-group table.tabular textarea[name$="-choices"] {
+    min-height: 2em !important;
+    max-height: 5em !important;
+    resize: vertical !important;
+}
+
+/* COLUMN field — normal border (avoid thick readonly styling bleed) */
+.inline-group table.tabular input[name$="-column"],
+.inline-group table.tabular input[name$="-columns"] {
+    border-width: 1px !important;
+    font-weight: normal !important;
+    padding: 4px 6px !important;
+    max-width: 4rem !important;
+}
+
+/* Inputs/selects in cells without :has (fallback) */
+.inline-group table.tabular td input[type="text"],
+.inline-group table.tabular td input[type="number"],
+.inline-group table.tabular td textarea,
+.inline-group table.tabular td select {
+    box-sizing: border-box !important;
+    margin: 0 !important;
+}
+
+.inline-group table.tabular td input[type="text"],
+.inline-group table.tabular td input[type="number"],
+.inline-group table.tabular td select {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Center tiny boolean/delete columns */
+.inline-group table.tabular th[class*="delete"],
+.inline-group table.tabular td[class*="delete"],
+.inline-group table.tabular td:has(input[type="checkbox"]) {
+    text-align: center !important;
+}
+
+.inline-group table.tabular input[type="checkbox"] {
+    margin: 0 auto !important;
+    display: block !important;
+}
+
+.inline-group table.tabular tbody tr:hover {
+    background-color: #f8fbfd !important;
+}

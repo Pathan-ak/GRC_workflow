@@ -1,0 +1,30 @@
+/* static/ticketflow/risk_calc.css */
+
+input[readonly] {
+  font-weight: 700;
+  border-width: 2px;
+}
+
+.risk-critical {
+  color: #721c24;
+  background: #f8d7da;
+  border-color: #dc3545;
+}
+
+.risk-high {
+  color: #856404;
+  background: #fff3cd;
+  border-color: #ffc107;
+}
+
+.risk-medium {
+  color: #155724;
+  background: #d4edda;
+  border-color: #28a745;
+}
+
+.risk-low {
+  color: #0c5460;
+  background: #d1ecf1;
+  border-color: #17a2b8;
+}

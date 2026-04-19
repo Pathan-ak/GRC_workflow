@@ -1,0 +1,60 @@
+{% extends "grc/base.html" %}
+
+{% block content %}
+<h2>Risk Start Request</h2>
+
+<form method="post">
+  {% csrf_token %}
+
+  {% for field in form_obj.fields.all %}
+    <div style="margin-bottom:12px;">
+      <label><strong>{{ field.label }}</strong></label><br>
+
+      {% if field.field_type == "select" %}
+        <select name="{{ field.id }}" onchange="calculateRisk()">
+          <option value="">-- Select --</option>
+          {% for c in field.choices.split(",") %}
+            <option value="{{ c }}">{{ c }}</option>
+          {% endfor %}
+        </select>
+      {% else %}
+        <input type="text" name="{{ field.id }}">
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  <hr>
+
+  <label>Inherent Risk (calculated)</label>
+  <input id="inherent" type="text" readonly>
+
+  <label>Residual Risk (calculated)</label>
+  <input id="residual" type="text" readonly>
+
+  <br><br>
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+function calculateRisk() {
+  let impact = [...document.querySelectorAll("select")].find(e => e.name.includes("Impact"))?.value;
+  let likelihood = [...document.querySelectorAll("select")].find(e => e.name.includes("Likelihood"))?.value;
+
+  let inherent = "";
+  let residual = "";
+
+  if (impact === "Very Significant" && likelihood === "Very Likely") {
+    inherent = "Critical"; residual = "90%";
+  } else if (impact === "Significant") {
+    inherent = "High"; residual = "70%";
+  } else if (impact === "Moderate") {
+    inherent = "Medium"; residual = "40%";
+  } else if (impact && likelihood) {
+    inherent = "Low"; residual = "10%";
+  }
+
+  document.getElementById("inherent").value = inherent;
+  document.getElementById("residual").value = residual;
+}
+</script>
+{% endblock %}

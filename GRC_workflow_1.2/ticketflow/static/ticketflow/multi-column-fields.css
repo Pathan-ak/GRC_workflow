@@ -1,0 +1,120 @@
+/* ticketflow/static/ticketflow/multi-column-fields.css */
+
+/* Container that wraps the dynamic fields; selector tuned by JS below */
+.tf-fields-multi {
+  /* enable multi-column flow */
+  column-gap: 32px;
+  column-fill: auto;
+  /* default to 2 columns; adjust as needed */
+  column-count: 2;
+  /* keep a little breathing room */
+  margin-top: 8px;
+}
+
+/* Make each field block a columnized block so label+input stay together */
+.tf-fields-multi .field-block,
+.tf-fields-multi .form-row,
+.tf-fields-multi .form-group,
+.tf-fields-multi .field {
+  /* prevent splitting inside a field */
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 12px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Make sure inside-block inputs expand to full width of column */
+.tf-fields-multi .field-block input[type="text"],
+.tf-fields-multi .field-block select,
+.tf-fields-multi .field-block textarea,
+.tf-fields-multi .form-row input[type="text"],
+.tf-fields-multi .form-row select,
+.tf-fields-multi .form-row textarea {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Add horizontal scrolling if the whole area grows too wide */
+.tf-fields-wrapper {
+  overflow-x: auto; /* horizontal scroll if necessary */
+  overflow-y: visible;
+  padding-bottom: 8px;
+}
+
+/* Optional: increase to 3 columns on large screens */
+@media (min-width: 1400px) {
+  .tf-fields-multi { column-count: 3; }
+}
+
+/* Fallback: on very small screens, use single column */
+@media (max-width: 800px) {
+  .tf-fields-multi { column-count: 1; }
+}
+
+/* multi-column-fields.css
+   Makes a long form split into horizontal columns (left->right).
+   Controlled by JS which adds the 'tf-multi-cols' class to the form.
+*/
+
+.vf-form.tf-multi-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+/* Each field becomes a card-like block. Adjust width for columns. */
+.vf-form.tf-multi-cols .field,
+.vf-form.tf-multi-cols .form-row {
+  box-sizing: border-box;
+  padding: 6px 0;
+  margin: 0;
+  /* default: 2 columns */
+  width: calc(50% - 9px);
+  min-width: 260px;
+}
+
+/* Small screens -> single column */
+@media (max-width: 900px) {
+  .vf-form.tf-multi-cols .field,
+  .vf-form.tf-multi-cols .form-row {
+    width: 100% !important;
+    min-width: 0;
+  }
+}
+
+/* Wide screens -> 3 columns */
+@media (min-width: 1600px) {
+  .vf-form.tf-multi-cols .field,
+  .vf-form.tf-multi-cols .form-row {
+    width: calc(33.3333% - 12px);
+  }
+}
+
+/* Make labels visible & compact inside blocks */
+.vf-form.tf-multi-cols label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+/* Keep inputs full width inside each block */
+.vf-form.tf-multi-cols input[type="text"],
+.vf-form.tf-multi-cols input[type="email"],
+.vf-form.tf-multi-cols select,
+.vf-form.tf-multi-cols textarea,
+.vf-form.tf-multi-cols input[type="file"],
+.vf-form.tf-multi-cols input[type="number"],
+.vf-form.tf-multi-cols input[type="date"] {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Reduce large help text display if any */
+.vf-form.tf-multi-cols .helptext,
+.vf-form.tf-multi-cols small.helptext {
+  display: none !important;
+}

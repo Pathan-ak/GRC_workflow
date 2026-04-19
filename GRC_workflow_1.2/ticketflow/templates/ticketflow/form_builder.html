@@ -1,0 +1,74 @@
+{% extends "grc/base.html" %}
+{% load static %}
+
+{% block page_title %}Form builder — {{ form_obj.name }}{% endblock %}
+{% block header %}Form builder: {{ form_obj.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'ticketflow/form_builder.css' %}" />
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="fb-toolbar">
+    <button type="button" class="btn-primary" id="fb-save">Save to database</button>
+    <button type="button" class="btn-secondary" id="fb-undo">Undo</button>
+    <button type="button" class="btn-secondary" id="fb-export">Export JSON</button>
+    <label class="btn-secondary" style="cursor:pointer">
+      Import JSON
+      <input type="file" id="fb-import" accept="application/json,.json" hidden />
+    </label>
+    <a href="{% url 'admin:ticketflow_form_change' form_obj.pk %}" class="btn-secondary" style="text-decoration:none;display:inline-block;padding:8px 12px;border-radius:8px;border:1px solid #ccc;background:#fff;">← Back to Django admin</a>
+    <span style="margin-left:8px;color:#666;font-size:13px;">Form ID: {{ form_obj.pk }}</span>
+  </div>
+  <div id="fb-msg" class="fb-msg" style="min-height:0;"></div>
+
+  <div class="fb-wrap">
+    <aside class="fb-palette">
+      <h3>Structure</h3>
+      <button type="button" class="fb-palette-item" id="fb-add-tab">＋ Add tab</button>
+      <button type="button" class="fb-palette-item" id="fb-add-section-last">＋ Add section (uses selected tab)</button>
+      <h3>Field types</h3>
+      <button type="button" class="fb-palette-item" data-fb-field-type="text">Text</button>
+      <button type="button" class="fb-palette-item" data-fb-field-type="textarea">Long text</button>
+      <button type="button" class="fb-palette-item" data-fb-field-type="select">Dropdown</button>
+      <button type="button" class="fb-palette-item" data-fb-field-type="file">File</button>
+      <button type="button" class="fb-palette-item" data-fb-field-type="email">Email</button>
+      <button type="button" class="fb-palette-item" data-fb-field-type="date">Date</button>
+      <button type="button" class="fb-palette-item" data-fb-field-type="number">Number</button>
+      <button type="button" class="fb-palette-item" data-fb-field-type="checkbox">Checkbox</button>
+      <button type="button" class="fb-palette-item" data-fb-field-type="radio">Radio</button>
+    </aside>
+
+    <section class="fb-canvas-wrap">
+      <p style="margin:0 0 8px;font-size:13px;color:#555;line-height:1.45;">
+        Canvas — drag by ⋮ handles. Fields can move between sections and tabs.
+        <strong>Palette field types</strong> are added to the selected tab, section, or field’s section.
+      </p>
+      <div id="fb-canvas" class="fb-canvas"></div>
+    </section>
+
+    <aside class="fb-props">
+      <h3>Properties</h3>
+      <div id="fb-props-content"></div>
+    </aside>
+  </div>
+</div>
+
+{% csrf_token %}
+{{ initial_structure|json_script:"fb-initial-data" }}
+
+<script src="{% static 'ticketflow/form_builder.js' %}"></script>
+<script>
+  (function () {
+    var raw = JSON.parse(document.getElementById("fb-initial-data").textContent);
+    document.getElementById("fb-msg").style.display = "block";
+    window.FormBuilderInit({
+      formId: {{ form_obj.pk }},
+      apiUrl: "{% url 'grc:api_form_structure' pk=form_obj.pk %}",
+      initial: raw
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,71 @@
+/* Drag-and-drop visual feedback styles */
+
+/* Dragging state - Use CSS transforms for better performance */
+.inline-group table.tabular tbody tr.dragging {
+    opacity: 0.5 !important;
+    background-color: #f0f0f0 !important;
+    border: 2px dashed #417690 !important;
+    will-change: transform !important;
+    transform: translateZ(0) !important; /* Force GPU acceleration */
+}
+
+/* Drop target highlight */
+.inline-group table.tabular tbody tr.drag-over {
+    border-top: 3px solid #417690 !important;
+    background-color: #e8f4f8 !important;
+}
+
+/* Drag target state (rows that can receive drop) */
+.inline-group table.tabular tbody tr.drag-target {
+    transition: background-color 0.2s ease;
+}
+
+/* Drag handles — compact, one line with inputs */
+.drag-handle,
+.drag-handle-tab,
+.drag-handle-section {
+    cursor: grab !important;
+    user-select: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1px 3px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    max-width: 22px !important;
+    max-height: 22px !important;
+    color: #417690 !important;
+    font-size: 11px !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+    transition: color 0.2s ease !important;
+    flex-shrink: 0 !important;
+}
+
+.drag-handle:hover,
+.drag-handle-tab:hover,
+.drag-handle-section:hover {
+    color: #205067 !important;
+    cursor: grabbing !important;
+}
+
+.drag-handle:active,
+.drag-handle-tab:active,
+.drag-handle-section:active {
+    cursor: grabbing !important;
+}
+
+/* Row cursor */
+.inline-group table.tabular tbody tr[draggable="true"] {
+    cursor: move !important;
+}
+
+.inline-group table.tabular tbody tr[draggable="true"]:hover {
+    background-color: #f9f9f9 !important;
+}
+
+/* Prevent text selection during drag */
+.inline-group table.tabular tbody tr.dragging * {
+    user-select: none !important;
+    pointer-events: none !important;
+}
